@@ -15,6 +15,20 @@ from gui_agent_captcha.benchmarks.exploration_depth.contracts import default_for
 manifest_path = default_formal_manifest_path()
 ```
 
+## Hugging Face benchmark
+
+Download [jiahaolu/Learn-from-Move](https://huggingface.co/datasets/jiahaolu/Learn-from-Move)
+with `snapshot_download`, and pass its `manifest.json` to the runtime. The dataset
+uses `drag_egocentric`, `drag_exocentric`, `ten_choice_egocentric`, and
+`ten_choice_exocentric`, alongside `rotation_inner` and `rotation_outer`.
+
+```bash
+python -m six_environments list --manifest benchmark/manifest.json
+python -m six_environments smoke --manifest benchmark/manifest.json --variant ten_choice_egocentric
+latentguiworld-eval --manifest benchmark/manifest.json --variant drag_egocentric \
+  --model models/latentlearner --output results/drag-egocentric
+```
+
 ## SFT Parquet
 
 Benchmark SFT rows contain `messages` and `images`. The messages are a user

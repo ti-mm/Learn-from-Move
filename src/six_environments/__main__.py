@@ -11,6 +11,7 @@ from pathlib import Path
 from gui_agent_captcha.actions import PrimitiveAction
 from gui_agent_captcha.benchmarks.exploration_depth.contracts import (
     EXPLORATION_BENCHMARK_VARIANTS, default_formal_manifest_path,
+    load_manifest, PAPER_VARIANTS, runtime_variant, paper_variant,
 )
 from gui_agent_captcha.benchmarks.exploration_depth.server import make_handler, main as serve
 from gui_agent_captcha.custom_envs import build_benchmark_variant
@@ -21,18 +22,20 @@ ROOT = Path(__file__).resolve().parents[2]
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("list", "smoke", "serve"))
-    parser.add_argument("--variant", choices=[v.key for v in EXPLORATION_BENCHMARK_VARIANTS])
+    parser.add_argument("--variant", choices=[*PAPER_VARIANTS, *(v.key for v in EXPLORATION_BENCHMARK_VARIANTS)])
     parser.add_argument("--manifest", type=Path, default=default_formal_manifest_path())
     parser.add_argument("--output", type=Path, default=ROOT / "runs/smoke")
     parser.add_argument("--port", type=int, default=8765)
     args = parser.parse_args()
-    manifest = json.loads(args.manifest.read_text())
+    manifest = load_manifest(args.manifest)
+    if args.variant:
+        args.variant = runtime_variant(args.variant)
     if manifest["suite_id"] != "exploration_depth_6x150_v10":
         raise ValueError("This standalone package requires the v10 manifest")
     variants = [v.key for v in EXPLORATION_BENCHMARK_VARIANTS]
     if args.command == "list":
         for variant in variants:
-            print(variant, sum(e["variant"] == variant for e in manifest["episodes"]))
+            print(paper_variant(variant), sum(e["variant"] == variant for e in manifest["episodes"]))
         return
     if args.command == "serve":
         return serve(["--manifest", str(args.manifest), "--port", str(args.port)])

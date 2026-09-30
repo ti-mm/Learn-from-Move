@@ -36,18 +36,17 @@ python -m six_environments serve --port 8765
 ```
 
 Each environment has 150 test episodes at 1280 × 720 resolution, for 900 episodes.
-The identifiers `first_person` and `third_person` correspond to egocentric and
-exocentric views. Rotation uses a horizontal slider to rotate the inner or outer
-image region. Evaluation scores the first release attempt.
+Rotation uses a horizontal slider to rotate the inner or outer image region. Evaluation scores the first release attempt.
 
 | Family | Environment identifiers |
 |---|---|
-| Ten-Choice | `ten_choice_first_person`, `ten_choice_third_person` |
+| Ten-Choice | `ten_choice_egocentric`, `ten_choice_exocentric` |
 | Rotation | `rotation_inner`, `rotation_outer` |
-| Drag | `drag_first_person`, `drag_third_person` |
+| Drag | `drag_egocentric`, `drag_exocentric` |
 
 The benchmark scenes are under `data/formal_benchmarks/`.
-Per-environment descriptors are under `environments/`.
+Per-environment descriptors are under `environments/`. The benchmark dataset is
+available on [Hugging Face](https://huggingface.co/datasets/jiahaolu/Learn-from-Move).
 
 ## Evaluation
 

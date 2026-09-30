@@ -38,6 +38,25 @@ FORMAL_SUITE_ID = "exploration_depth_6x150_v10"
 SMOKE_SUITE_ID = "exploration_depth_smoke_v6"
 
 
+PAPER_SUITE_ID = "learn_from_move"
+PAPER_VARIANTS = {
+    "ten_choice_exocentric": "ten_choice_third_person",
+    "ten_choice_egocentric": "ten_choice_first_person",
+    "drag_exocentric": "drag_third_person",
+    "drag_egocentric": "drag_first_person",
+    "rotation_inner": "rotation_inner",
+    "rotation_outer": "rotation_outer",
+}
+
+
+def runtime_variant(key: str) -> str:
+    return PAPER_VARIANTS.get(key, key)
+
+
+def paper_variant(key: str) -> str:
+    return {value: name for name, value in PAPER_VARIANTS.items()}.get(key, key)
+
+
 def default_formal_suite_root() -> Path:
     return storage_path("data", "formal_benchmarks", FORMAL_SUITE_ID)
 
@@ -55,6 +74,7 @@ def default_smoke_manifest_path() -> Path:
 
 
 def variant_contract(key: str) -> ExplorationVariantContract:
+    key = runtime_variant(key)
     try:
         return _CONTRACT_BY_KEY[key]  # type: ignore[index]
     except KeyError as exc:
@@ -67,6 +87,14 @@ def load_manifest(path: Path | str | None = None) -> dict[str, Any]:
     payload = json.loads(manifest_path.read_text(encoding="utf-8"))
     if payload.get("schema") != "gui_captcha_exploration_depth_manifest_v1":
         raise ValueError(f"unsupported exploration-depth manifest: {manifest_path}")
+    if payload.get("suite_id") == PAPER_SUITE_ID:
+        for episode in payload.get("episodes", []):
+            if episode.get("suite_id") != PAPER_SUITE_ID:
+                raise ValueError("episode suite IDs must match the benchmark manifest")
+            episode["scene_variant"] = episode["variant"]
+            episode["variant"] = runtime_variant(episode["variant"])
+            episode["suite_id"] = FORMAL_SUITE_ID
+        payload["suite_id"] = FORMAL_SUITE_ID
     return payload
 
 
@@ -74,6 +102,7 @@ def episodes_for_variant(
     manifest: dict[str, Any],
     variant: str,
 ) -> list[dict[str, Any]]:
+    variant = runtime_variant(variant)
     variant_contract(variant)
     episodes = [
         dict(episode)

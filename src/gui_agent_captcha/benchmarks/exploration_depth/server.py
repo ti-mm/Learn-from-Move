@@ -50,12 +50,12 @@ def _episode_by_variant(manifest: dict[str, Any], variant: str) -> dict[str, Any
 
 def _public_catalog(manifest: dict[str, Any]) -> dict[str, Any]:
     display = {
-        "ten_choice_third_person": ("Ten-Choice", "Third Person", "L1"),
-        "ten_choice_first_person": ("Ten-Choice", "First Person", "L2"),
+        "ten_choice_third_person": ("Ten-Choice", "Exocentric", "L1"),
+        "ten_choice_first_person": ("Ten-Choice", "Egocentric", "L2"),
         "rotation_inner": ("Rotation", "Inner Ring", "L2"),
         "rotation_outer": ("Rotation", "Outer Ring", "L2"),
-        "drag_third_person": ("Drag-and-Drop", "Third Person", "L0"),
-        "drag_first_person": ("Drag-and-Drop", "First Person", "L2"),
+        "drag_third_person": ("Drag-and-Drop", "Exocentric", "L0"),
+        "drag_first_person": ("Drag-and-Drop", "Egocentric", "L2"),
     }
     variants = []
     for variant, (family_name, variant_name, level) in display.items():

@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 import tempfile
 
+from gui_agent_captcha.benchmarks.exploration_depth.contracts import PAPER_VARIANTS
+
 ROOT = Path(__file__).resolve().parents[2]
 SUITE = ROOT / 'data/formal_benchmarks/exploration_depth_6x150_v10/manifest.json'
 VARIANTS = ('ten_choice_third_person', 'ten_choice_first_person', 'rotation_inner',
@@ -62,7 +64,7 @@ def main(argv=None):
     p.add_argument('--processor', type=Path)
     p.add_argument('--server-url', help='vLLM endpoint, e.g. http://localhost:8000/v1')
     p.add_argument('--served-model', default='latentlearner')
-    p.add_argument('--variant', choices=['all', *VARIANTS], default='all')
+    p.add_argument('--variant', choices=['all', *PAPER_VARIANTS, *VARIANTS], default='all')
     p.add_argument('--manifest', type=Path, default=SUITE)
     p.add_argument('--output', type=Path, default=Path('results/evaluation'))
     p.add_argument('--limit', type=int, help='Evaluate this many episodes per variant')

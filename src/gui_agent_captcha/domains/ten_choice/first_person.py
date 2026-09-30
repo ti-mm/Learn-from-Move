@@ -185,7 +185,7 @@ class PairedHoverRevealEnv(HoverRevealEnv):
             )
             self.page.evaluate(
                 "variant => window.__explorationSetTenChoiceMode?.(variant)",
-                self.benchmark_variant,
+                episode.get("scene_variant", self.benchmark_variant),
             )
         self.cursor_xy = (self.viewport_width / 2.0, self.viewport_height / 2.0)
         screenshot_path = self._capture_screenshot(phase="reset") or ""

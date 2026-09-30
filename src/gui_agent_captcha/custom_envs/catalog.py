@@ -194,6 +194,9 @@ EXPLORATION_DEPTH_VARIANTS: tuple[BenchmarkVariantSpec, ...] = (
 
 
 def get_benchmark_variant(key: str) -> BenchmarkVariantSpec:
+    from ..benchmarks.exploration_depth.contracts import runtime_variant
+
+    key = runtime_variant(key)
     for spec in EXPLORATION_DEPTH_VARIANTS:
         if spec.key == key:
             return spec
