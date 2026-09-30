@@ -1,0 +1,62 @@
+# Data interfaces
+
+## Benchmark scenes
+
+The benchmark under `data/formal_benchmarks/` contains the paper's six
+environments. Its `manifest.json` enumerates 900 episodes and their scene files,
+with 150 episodes per environment. The `cases/` and `assets/` subdirectories
+contain the rendering resources.
+
+Use the runtime to locate the default manifest:
+
+```python
+from gui_agent_captcha.benchmarks.exploration_depth.contracts import default_formal_manifest_path
+
+manifest_path = default_formal_manifest_path()
+```
+
+## SFT Parquet
+
+Benchmark SFT rows contain `messages` and `images`. The messages are a user
+instruction/history followed by the target assistant Think/action response.
+Images are local image entries in chronological order, capped at the latest three.
+Grounding MOVE windows additionally mark supervised assistant messages with
+`trainable: true`; earlier assistant responses supply history. The custom
+`GroundCUAWindowSFTDataset` translates these annotations into token loss masks.
+
+`training_with_think` serializes the benchmark format from successful trajectories
+and teacher responses. The GroundCUA preparation modules select the same records
+for direct-click and MOVE, preserving source IDs and final click coordinates.
+
+## GRPO Parquet
+
+Benchmark rows contain a prompt, `agent_name`, `data_source`, and `extra_info`
+with task configuration. The configuration references a training manifest and
+its environment instance. `six_env_rl_dataset` produces these task-only rows;
+combine 2,560 rows from each of the family's two variants and shuffle for one
+epoch. Use training scenes distinct from validation and test scenes.
+
+Grounding rows contain the instruction, local screenshot, target geometry, and
+track metadata. `build_groundcua_paper_style_verl_rl` selects 10,000 instructions
+excluded from the supplied SFT annotations. `export_groundcua_paper_style_verl`
+converts the same selection to direct-click and MOVE tracks.
+
+## Grounding evaluation layout
+
+Place the benchmark's original annotation/image files in these directories:
+
+```text
+data/grounding-benchmarks/
+  ScreenSpot-Pro/annotations/
+  ScreenSpot-Pro/images/
+  ScreenSpot-v2/
+  mmbench-gui/
+  ui-vision/
+  osworld-g/data/test-00000-of-00001.parquet
+```
+
+The loaders in `eval/groundcua_table2_qwen3_direct.py` define each source schema.
+Full evaluation expects 1,581 ScreenSpot-Pro, 1,272 ScreenSpot-v2, 3,594
+MMBench-GUI, 5,479 UI-Vision, and 510 OSWorld-G examples. A shared initial-cursor
+map uses the `paired90_training_cursor_position_map_v1` schema consumed by
+`_load_cursor_map` in `eval/qwen3vl_paired90_five_bench.py`.

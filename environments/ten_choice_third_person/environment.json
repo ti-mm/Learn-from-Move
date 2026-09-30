@@ -1,0 +1,7 @@
+{
+  "variant": "ten_choice_third_person",
+  "suite_id": "exploration_depth_6x150_v10",
+  "environment_class": "gui_agent_captcha.domains.ten_choice.first_person.PairedHoverRevealEnv",
+  "manifest": "../../data/formal_benchmarks/exploration_depth_6x150_v10/manifest.json",
+  "episode_count": 150
+}
